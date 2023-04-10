@@ -1,0 +1,81 @@
+﻿@model PRES_PROD
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="Edit">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+
+                                <input type="hidden" asp-for="ID" class="form-control">
+                                <input type="hidden" asp-for="URETIM_TARIH" class="form-control">
+                                <input type="hidden" asp-for="HATA_TANIMI" class="form-control">
+                                <input type="hidden" asp-for="ACIKLAMA" class="form-control">
+
+                                <label for="vardiya">Vardiya</label>
+                                <input type="text" asp-for="VARDIYA" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+
+                                <label for="mesai">Mesai</label>
+                                <input type="text" asp-for="MESAI" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+
+                                <label for="hat">Hat</label>
+                                <input type="text" asp-for="HAT" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+
+                                <label for="pres">Pres</label>
+                                <input type="text" asp-for="PRES" class="form-control">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="parca_no">Parça No</label>
+                        <input type="text"asp-for="PARCA_NO" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="is_emri">İş Emri</label>
+                        <input type="text" asp-for="IS_EMRI" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="operasyon_sayisi">Operasyon Sayısı</label>
+                        <input type="text" asp-for="OPERASYON_SAYISI" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="sure">Süre</label>
+                        <input type="text" asp-for="SURE_DK" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="operator_sayısı">Operatör Sayısı</label>
+                        <input type="text" asp-for="OPERATOR_SAYISI" class="form-control">
+                    </div> 
+                    <div class="form-group">
+                        <label for="hata_kodu">Hata Kodu</label>
+                        <input type="text" asp-for="HATA_KODU" class="form-control">
+                    </div> 
+                    <div class="form-group">
+                        <label for="vurus">Vuruş</label>
+                        <input type="text" asp-for="VURUS" class="form-control">
+                    </div>
+                </div>
+               
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Vazgeç</button>
+                    <button type="button" data-save="modal" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

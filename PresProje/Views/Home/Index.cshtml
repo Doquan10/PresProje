@@ -1,0 +1,406 @@
+﻿@model IEnumerable<PresProje.Models.deneme_pres>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>Anasayfa</h3>
+            </div>
+
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12  ">
+                <div class="x_panel">
+                    <!--Main Alan-->
+                    <div class="x_content">
+
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th>ID</th>
+                                <th>Üretim Tarih</th>
+                                <th>Parça No</th>
+                                <th>İş Emri</th>
+                                <th>OP</th>
+                                <th>Zaman</th>
+                                <th>Oper. Sayısı</th>
+                                <th>Hata Kodu</th>
+                                <th>Kabul</th>
+                                <th>Açıklama</th>
+
+                            </tr>
+                            @foreach (var i in Model)
+                            {
+                                <tr>
+                                    <td>@i.ID</td>
+                                    <td>@i.URETIM_TARIH</td>
+                                    <td>@i.PARCA_NO</td>
+                                    <td>@i.IS_EMRI</td>
+                                    <td>@i.OPERASYON_SAYISI</td>
+                                    <td>@i.SURE_DK</td>
+                                    <td>@i.OPERATOR_SAYISI</td>
+                                    <td>@i.HATA_KODU</td>
+                                    <td>@i.VURUS</td>
+                                    <td>@i.ACIKLAMA</td>
+
+                                </tr>
+                            }
+
+                        </table>
+
+
+                       
+
+                        <form method="post" id="insert_form">
+                            <div class="table-repsonsive">
+                                <br />
+                                <span id="error"></span>
+                                <row>
+                                    <div class="col-md-2">
+                                        <script>
+                                            $(document).ready(function () {
+
+                                                document.getElementById('URETIM_TARIH').valueAsDate = new Date();
+
+                                                $("#PARCA_NO").autocomplete({
+                                                    source: function (request, response) {
+                                                        $.ajax({
+                                                            url: "/Home/AutoCompleteParca",
+                                                            type: "POST",
+
+                                                            data: { "prefix": request.term },
+                                                            success: function (data) {
+                                                                response($.map(data, function (item) {
+                                                                    return item;
+                                                                }))
+
+                                                            }
+                                                        })
+                                                    },
+                                                    messages: {
+                                                        noResults: "", results: ""
+                                                    },
+                                                    select: function (e, i) {
+                                                        $("#selectBox").val(i.item.val);
+                                                    }
+                                                });
+
+                                                $("#HATA_KODU").autocomplete({
+                                                    source: function (request, response) {
+                                                        $.ajax({
+                                                            url: "/Home/AutoCompleteHataTanimi",
+                                                            type: "POST",
+
+                                                            data: { "prefix": request.term },
+                                                            success: function (data) {
+                                                                response($.map(data, function (item) {
+                                                                    $("#HATA_TANIMI").val(item);
+                                                                    $('[data-toggle="tooltip"]').tooltip();
+                                                                    $('#HATA_KODU').prop('title', item);
+                                                                   // return item;
+                                                                }))
+
+                                                            }
+                                                        })
+                                                    },
+                                                    messages: {
+                                                        noResults: "", results: ""
+                                                    },
+                                                    select: function (e, i) {
+                                                        $("#selectBox").val(i.item.val);
+                                                    }
+                                                   
+                                                });
+                                               
+                                            });
+
+                                        </script>
+                                        <input id="URETIM_TARIH" name="URETIM_TARIH" type="date" class="date-picker form-control" placeholder="Tarih" required="required">
+
+                                        <br />
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <select class="form-control" name="VARDIYA" id="VARDIYA" required>
+                                            <option value="" disabled selected>Vardiya Seç</option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="C">C</option>
+
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <select class="form-control" name="MESAI" id="MESAI">
+                                            <option selected>Normal</option>
+                                            <option>Fazla</option>
+
+
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <select disabled class="form-control" name="HAT" id="HAT">
+                                            <option selected>@ViewBag.Name</option>
+                                           
+
+                                        </select>
+                                    </div>
+                                </row>
+
+                                
+
+                                <div class="col-md-2">
+                                    <select class="form-control" name="PRES" id="PRES" required>
+                                        <option value="" disabled selected>Pres</option>
+                                        @foreach (var item in ViewBag.Pres)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+
+
+                                    </select>
+                                </div>
+
+
+                                <table class="table table-bordered table-striped" id="item_table">
+                                    <tr>
+
+                                        <th>Parça No</th>
+                                        <th>İş Emri</th>
+                                        <th>OP</th>
+                                        <th>Zaman  <p style="color:red;" id="total_amount"></p></th>
+                                        <th>Oper. Sayısı</th>
+                                        <th>Hata Kodu</th>
+                                        <th>Kabul</th>
+                                        <th>Açıklama</th>
+                                        <th hidden>Açıklama</th>
+                                        <th></th>
+
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input name="PARCA_NO" id="PARCA_NO" type="text" class="form-control parca" placeholder="" required="required">
+                                        </td>
+                                        <td>
+                                            <input name="IS_EMRI" type="text" class="date-picker form-control" placeholder="">
+
+                                        </td>
+                                        <td>
+                                            <input name="OPERASYON_SAYISI" type="number" step=10  class="date-picker form-control" placeholder="Operasyon Sayısı" required="required">
+
+                                        </td>
+
+                                        <td>
+                                            <input name="SURE_DK" type="number" id="dakika" class="dakika form-control" placeholder="Dakika" required="required">
+
+                                        </td>
+
+                                        <td>
+                                            <input name="OPERATOR_SAYISI" type="number" max="17" class="date-picker form-control" placeholder="Operator Sayısı" required="required">
+
+                                        </td>
+
+                                        <td>
+                                            <input name="HATA_KODU" id="HATA_KODU" data-toggle="tooltip"  type="text" class="date-picker form-control" placeholder="">
+
+                                        </td>
+                                    
+
+                                        <td>
+                                            <input name="VURUS" type="number" class="date-picker form-control" placeholder="Vuruş" required="required">
+
+                                        </td>
+                                   
+
+
+                                        <td>
+                                            <input name="ACIKLAMA" type="text" class="date-picker form-control" placeholder="Açıklama">
+
+                                        </td>
+
+                                        <td hidden>
+                                            <input name="HATA_TANIMI" id="HATA_TANIMI" type="text" class="form-control parca" placeholder="" >
+
+                                        </td>
+
+
+
+                                        <th><button type="button" name="add" class="btn btn-success btn-sm add"><span class="glyphicon glyphicon-plus"></span></button></th>
+                                    </tr>
+                                </table>
+                                <div align="center">
+                                    <input type="submit" name="submit" class="btn btn-info" value="Kaydet" />
+                                </div>
+                            </div>
+                        </form>
+
+
+                        <script>
+
+                            $(document).ready(function () {
+                                var counter = 1;
+
+                                $(document).on('click', '.add', function () {
+                                    counter++;
+                                    var html = '';
+                                    html += '<tr>';
+                                    html += '<td><input name="PARCA_NO" id="PARCA_NO' + counter + '" type="text" class="date-picker form-control" placeholder="" required="required"></td>';
+
+                                    html += '<td> <input name="IS_EMRI" type="text" class="date-picker form-control" placeholder="" ></td>';
+                                    html += '<td> <input name="OPERASYON_SAYISI" type="number" step=10 class="date-picker form-control" placeholder="Operasyon Sayısı" required="required"></td>';
+                                    html += '<td> <input name="SURE_DK" type="number" id="dakika" class="dakika form-control" placeholder="Dakika" required="required"></td>';
+                                    html += '<td> <input name="OPERATOR_SAYISI" type="number" max="17" class="date-picker form-control" placeholder="Operator Sayısı" required="required"></td>';
+                                    html += '<td> <input name="HATA_KODU" id="HATA_KODU' + counter + '" data-toggle="tooltip" type="text" class="date-picker form-control" placeholder="" required="required"></td>';
+                                    html += '<td> <input name="VURUS" type="number" class="date-picker form-control" placeholder="Vuruş" required="required"></td>';
+                                    html += '<td> <input name="ACIKLAMA" type="text" class="date-picker form-control" placeholder="Açıklama"></td>';
+                                    html += '<td hidden> <input name="HATA_TANIMI" id="HATA_TANIMI' + counter + '" type="text" class="date-picker form-control"></td>';
+                                    html += '<td><button type="button" name="remove" class="btn btn-danger btn-sm remove"><span class="glyphicon glyphicon-minus"></span></button></td></tr>';
+                                    $('#item_table').append(html);
+
+                                    $("#PARCA_NO" + counter).autocomplete({
+                                        source: function (request, response) {
+                                            $.ajax({
+                                                url: "/Home/AutoCompleteParca",
+                                                type: "POST",
+
+                                                data: { "prefix": request.term },
+                                                success: function (data) {
+                                                    response($.map(data, function (item) {
+                                                        return item;
+                                                    }))
+
+                                                }
+                                            })
+                                        },
+                                        messages: {
+                                            noResults: "", results: ""
+                                        },
+                                        select: function (e, i) {
+                                            $("#selectBox").val(i.item.val);
+                                        }
+                                    });
+
+                                    $("#HATA_KODU" + counter).autocomplete({
+                                        source: function (request, response) {
+                                            $.ajax({
+                                                url: "/Home/AutoCompleteHataTanimi",
+                                                type: "POST",
+
+                                                data: { "prefix": request.term },
+                                                success: function (data) {
+                                                    response($.map(data, function (item) {
+                                                        $("#HATA_TANIMI" + counter).val(item);
+                                                        $('[data-toggle="tooltip"]').tooltip();
+                                                        $('#HATA_KODU' + counter).prop('title', item);
+                                                        // return item;
+                                                    }))
+
+                                                }
+                                            })
+                                        },
+                                        messages: {
+                                            noResults: "", results: ""
+                                        },
+                                        select: function (e, i) {
+                                            $("#selectBox").val(i.item.val);
+                                        }
+
+                                    });
+
+                                  
+
+                                });
+
+                                $(document).on('click', '.remove', function () {
+                                    $(this).closest('tr').remove();
+
+                                    var kalan_dk = 480;
+
+                                    $('.dakika').each(function () {
+                                        kalan_dk -= Number($(this).val());
+                                    });
+
+
+
+                                    $('#total_amount').text("Kalan dakika : " + kalan_dk + "dk");
+
+                                });
+
+                                $('#insert_form').on('submit', function (event) {
+                                    event.preventDefault();
+                                    var error = '';
+
+                                    $('.item_name').each(function () {
+                                        var count = 1;
+                                        if ($(this).val() == '') {
+                                            error += "<p>Enter Item Name at " + count + " Row</p>";
+                                            return false;
+                                        }
+                                        count = count + 1;
+                                    });
+
+                                    var names = new Array();
+                                    $("#item_table TBODY TR").each(function () {
+                                        var row = $(this);
+                                        var name = {};
+                                        name.PARCA_NO = $(this).find("td:eq(0) input[name='PARCA_NO']").val();
+                                        name.IS_EMRI = $(this).find("td:eq(1) input[name='IS_EMRI']").val();
+                                        name.OPERASYON_SAYISI = $(this).find("td:eq(2) input[name='OPERASYON_SAYISI']").val();
+                                        name.SURE_DK = $(this).find("td:eq(3) input[name='SURE_DK']").val();
+                                        name.OPERATOR_SAYISI = $(this).find("td:eq(4) input[name='OPERATOR_SAYISI']").val();
+                                        name.HATA_KODU = $(this).find("td:eq(5) input[name='HATA_KODU']").val();
+                                        name.VURUS = $(this).find("td:eq(6) input[name='VURUS']").val();
+                                        name.ACIKLAMA = $(this).find("td:eq(7) input[name='ACIKLAMA']").val();
+                                        name.HATA_TANIMI = $(this).find("td:eq(8) input[name='HATA_TANIMI']").val();
+                                        name.PRES = $("#PRES").val();
+                                        name.HAT = $("#HAT").val();
+                                        name.VARDIYA = $("#VARDIYA").val();
+                                        name.URETIM_TARIH = $("#URETIM_TARIH").val();
+                                        name.MESAI = $("#MESAI").val();
+
+
+                                        names.push(name);
+                                        // alert(name);
+                                    });
+
+                                    var form_data = $(this).serialize();
+
+                                    if (error == '') {
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/Home/Add",
+                                            data: JSON.stringify(names),
+                                            contentType: "application/json; charset=utf-8",
+                                            dataType: "json",
+                                            success: function (r) {
+                                                //  alert(r + " record(s) inserted.");
+                                                location.reload();
+                                            }
+                                        });
+
+                                    }
+                                    else {
+                                        $('#error').html('<div class="alert alert-danger">' + error + '</div>');
+                                    }
+                                });
+
+                            });
+                        </script>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- end panel -->
